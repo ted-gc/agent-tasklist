@@ -1,8 +1,10 @@
-import tasks from "@/data/tasks.json";
+import { getAllTasks } from "@/lib/store";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
-  const openTasks = tasks.filter((t) => t.status === "open");
+  const openTasks = getAllTasks().filter((t) => t.status === "open");
 
   return (
     <div>

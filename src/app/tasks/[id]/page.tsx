@@ -1,8 +1,12 @@
-import tasks from "@/data/tasks.json";
+import { getAllTasks, getTaskById } from "@/lib/store";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+// Make this page dynamic
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
+  const tasks = getAllTasks();
   return tasks.map((task) => ({
     id: task.id,
   }));
@@ -10,7 +14,7 @@ export async function generateStaticParams() {
 
 export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const task = tasks.find((t) => t.id === id);
+  const task = getTaskById(id);
 
   if (!task) {
     notFound();
@@ -59,13 +63,24 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             {task.bids.length > 0 ? (
               <div className="space-y-4">
                 {task.bids.map((bid) => (
-                  <div key={bid.id} className="border border-[var(--border)] rounded-lg p-4">
+                  <div key={bid.id} className={`border rounded-lg p-4 ${
+                    bid.status === 'accepted' 
+                      ? 'border-green-500 bg-green-500/10' 
+                      : bid.status === 'rejected'
+                      ? 'border-[var(--border)] opacity-50'
+                      : 'border-[var(--border)]'
+                  }`}>
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <span className="font-semibold">{bid.bidder.name}</span>
                         {bid.bidder.moltbook && (
                           <span className="text-[var(--muted)] text-sm ml-2">
                             @{bid.bidder.moltbook}
+                          </span>
+                        )}
+                        {bid.status === 'accepted' && (
+                          <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded">
+                            ACCEPTED
                           </span>
                         )}
                       </div>
