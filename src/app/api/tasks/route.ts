@@ -3,8 +3,16 @@ import { getAllTasks, createTask } from "@/lib/store";
 
 // GET /api/tasks - List all open tasks
 export async function GET() {
-  const tasks = getAllTasks();
-  return NextResponse.json(tasks);
+  try {
+    const tasks = await getAllTasks();
+    return NextResponse.json(tasks);
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch tasks" },
+      { status: 500 }
+    );
+  }
 }
 
 // POST /api/tasks - Create a new task
@@ -22,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const task = createTask({
+    const task = await createTask({
       title,
       description,
       acceptanceCriteria,
@@ -39,7 +47,8 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(task, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Failed to create task:", error);
     return NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }

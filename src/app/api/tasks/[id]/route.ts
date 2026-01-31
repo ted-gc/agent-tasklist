@@ -7,13 +7,22 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const task = getTaskById(id);
   
-  if (!task) {
-    return NextResponse.json({ error: "Task not found" }, { status: 404 });
+  try {
+    const task = await getTaskById(id);
+    
+    if (!task) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+    
+    return NextResponse.json(task);
+  } catch (error) {
+    console.error("Failed to fetch task:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch task" },
+      { status: 500 }
+    );
   }
-  
-  return NextResponse.json(task);
 }
 
 // PATCH /api/tasks/[id] - Update task (status, accept bid)
@@ -28,7 +37,7 @@ export async function PATCH(
     
     // Accept a bid
     if (body.acceptBid) {
-      const task = acceptBid(id, body.acceptBid);
+      const task = await acceptBid(id, body.acceptBid);
       if (!task) {
         return NextResponse.json({ error: "Task or bid not found" }, { status: 404 });
       }
@@ -37,7 +46,7 @@ export async function PATCH(
     
     // Update status
     if (body.status) {
-      const task = updateTaskStatus(id, body.status);
+      const task = await updateTaskStatus(id, body.status);
       if (!task) {
         return NextResponse.json({ error: "Task not found" }, { status: 404 });
       }
@@ -45,7 +54,8 @@ export async function PATCH(
     }
     
     return NextResponse.json({ error: "No valid update provided" }, { status: 400 });
-  } catch {
+  } catch (error) {
+    console.error("Failed to update task:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

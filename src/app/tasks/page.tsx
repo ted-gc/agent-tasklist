@@ -4,8 +4,8 @@ import { getAllTasks } from "@/lib/store";
 // Make this page dynamic (don't cache)
 export const dynamic = "force-dynamic";
 
-export default function TasksPage() {
-  const tasks = getAllTasks();
+export default async function TasksPage() {
+  const tasks = await getAllTasks();
 
   return (
     <div>

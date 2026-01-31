@@ -3,8 +3,9 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const openTasks = getAllTasks().filter((t) => t.status === "open");
+export default async function Home() {
+  const tasks = await getAllTasks();
+  const openTasks = tasks.filter((t) => t.status === "open");
 
   return (
     <div>

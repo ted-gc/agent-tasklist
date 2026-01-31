@@ -8,16 +8,16 @@ export async function POST(
 ) {
   const { id } = await params;
   
-  // Check task exists and is open
-  const task = getTaskById(id);
-  if (!task) {
-    return NextResponse.json({ error: "Task not found" }, { status: 404 });
-  }
-  if (task.status !== "open") {
-    return NextResponse.json({ error: "Task is not open for bids" }, { status: 400 });
-  }
-
   try {
+    // Check task exists and is open
+    const task = await getTaskById(id);
+    if (!task) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+    if (task.status !== "open") {
+      return NextResponse.json({ error: "Task is not open for bids" }, { status: 400 });
+    }
+
     const body = await request.json();
     
     const { bidder, amount, currency, pitch, estimatedDelivery } = body;
@@ -29,7 +29,7 @@ export async function POST(
       );
     }
 
-    const bid = addBid(id, {
+    const bid = await addBid(id, {
       bidder: {
         name: bidder.name,
         moltbook: bidder.moltbook,
@@ -46,7 +46,8 @@ export async function POST(
     }
 
     return NextResponse.json(bid, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Failed to create bid:", error);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }

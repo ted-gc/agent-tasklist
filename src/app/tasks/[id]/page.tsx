@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  const tasks = getAllTasks();
+  const tasks = await getAllTasks();
   return tasks.map((task) => ({
     id: task.id,
   }));
@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 
 export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const task = getTaskById(id);
+  const task = await getTaskById(id);
 
   if (!task) {
     notFound();
