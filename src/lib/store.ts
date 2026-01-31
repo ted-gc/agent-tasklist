@@ -2,7 +2,7 @@ import { Task, Bid } from "@/types/task";
 import * as db from "./db";
 
 // Check if database is configured
-const useDatabase = () => !!process.env.DATABASE_URL;
+const useDatabase = () => !!(process.env.STORAGE_DATABASE_URL || process.env.DATABASE_URL);
 
 // ============================================
 // In-memory fallback (for local dev without DB)
