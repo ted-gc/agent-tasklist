@@ -1,15 +1,13 @@
-import { getAllTasks, getTaskById } from "@/lib/store";
+import { getTaskById } from "@/lib/store";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 // Make this page dynamic
 export const dynamic = "force-dynamic";
 
+// Skip static generation - all pages are dynamic
 export async function generateStaticParams() {
-  const tasks = await getAllTasks();
-  return tasks.map((task) => ({
-    id: task.id,
-  }));
+  return [];
 }
 
 export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
